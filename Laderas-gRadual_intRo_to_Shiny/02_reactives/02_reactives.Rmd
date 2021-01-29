@@ -1,0 +1,188 @@
+```{r}
+library(shiny)
+library(vembedr)
+library(tidyverse)
+library(fivethirtyeight)
+data("biopics")
+```
+
+# Slides about Reactives
+
+https://laderast.github.io/gradual_shiny/slides/#27
+
+
+# Video
+
+```{r}
+vembedr::embed_url("https://youtu.be/_UuuL-cFqjs?t=3080")
+```
+
+
+# Making a `reactive()` dataset for our app.
+
+So far, we've just changed aesthetics for the plot in our app.
+
+What if we wanted to change the underlying data using `filter()`? 
+
+Can we dynamically control that process with a control on the `shiny()` app?
+
+Yes, we can, with a new idea called a `reactive`.
+
+
+
+## What is a Reactive?
+
+Much like our plot was listening for changes to our `selectInput()` control, we can make a dataset that listens for changes to a `slider`. 
+
+
+
+
+## Adding a slider 
+
+Let's go back to the simple form of our app. We'll take out the `selectInput()` for right now, so we can focus on our new slider and what it can do.
+
+```{r}
+library(shiny)
+library(fivethirtyeight)
+data(biopics)
+
+ui <- fluidPage(
+  plotOutput("paired_plot"),
+  sliderInput(inputId = "year_slider",
+              label = "Select Year to Filter",
+              min = 1915,
+              max = 2014,
+              value = 1915)
+)
+
+server <- function(input, output) {
+
+  output$paired_plot <- renderPlot({
+
+    ggplot(biopics) + 
+      aes_string(x="year_release", 
+                 y="box_office", 
+                 color= "type_of_subject") +
+      geom_point()
+  })
+
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+## Making our Dataset react to our slider.
+
+We're going to take the following `dplyr` code and make it react to our slider:
+
+
+```{r}
+biopics %>%
+  filter(year < 2014)
+```
+
+To do this, we need to first put it into what's called a `reactive()`.
+
+
+```
+biopics_filtered <- reactive({
+   biopics %>%
+      filter(year < 2014)
+})
+
+```
+
+## Exercise
+
+Wire the sliderInput to the reactive by using the correct id to `input` (it's the blank below.)
+
+When you are done with that, use `biopics_filtered()` as a dataset in the ggplot statement:
+
+```{r}
+library(shiny)
+library(fivethirtyeight)
+data(biopics)
+
+ui <- fluidPage(
+  plotOutput("paired_plot"),
+  sliderInput(inputId = "year_slider",
+              label = "Select Year to Filter",
+              min = 1915,
+              max = 2014,
+              value = 1915)
+)
+
+server <- function(input, output) {
+  
+  biopics_filtered <- reactive({
+    
+    biopics %>%
+      filter(year < input$_______)
+    
+  })
+  
+
+  output$paired_plot <- renderPlot({
+
+    ggplot(___________) + 
+      aes_string(x="year_release", 
+                 y="box_office", 
+                 color= "type_of_subject") +
+      geom_point()
+  })
+
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+
+
+## Final App
+
+Here is the final app (also available in `02_reactives/app.R`).
+
+```{r}
+library(shiny)
+library(tidyverse)
+library(fivethirtyeight)
+
+##load the biopics data
+data(biopics)
+biopics <- biopics %>% filter(!is.na(box_office))
+
+# Define UI for application that plots 
+ui <- fluidPage(
+   
+      plotOutput("scatter_plot"),
+      sliderInput("year_filter", 
+                  "Select Highest Year",
+                  min = 1915,
+                  max=2014, 
+                  value = 2014)
+         
+)
+
+##Server is where all of the computations happen
+server <- function(input, output) {
+  
+  biopics_filtered <- reactive({
+    biopics %>%
+        filter(year_release < input$year_filter)
+     })
+   
+   output$scatter_plot <- renderPlot({
+      
+       ggplot(biopics_filtered()) +
+         aes_string(y="box_office", 
+         x="year_release",
+         color="type_of_subject") + 
+       geom_point()
+     
+   })
+}
+
+# Run the application 
+shinyApp(ui = ui, server = server)
+```
+

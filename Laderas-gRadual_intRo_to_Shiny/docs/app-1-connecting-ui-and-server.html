@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>3 App 1: Connecting ui and server | A gRadual intRoduction to Shiny</title>
+  <meta name="description" content="A gradual and gentle introduction to interactive programming concepts in Shiny." />
+  <meta name="generator" content="bookdown 0.10.2 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="3 App 1: Connecting ui and server | A gRadual intRoduction to Shiny" />
+  <meta property="og:type" content="book" />
+  <meta property="og:url" content="http://laderast.github.io/gradual_shiny/" />
+  
+  <meta property="og:description" content="A gradual and gentle introduction to interactive programming concepts in Shiny." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="3 App 1: Connecting ui and server | A gRadual intRoduction to Shiny" />
+  
+  <meta name="twitter:description" content="A gradual and gentle introduction to interactive programming concepts in Shiny." />
+  
+
+<meta name="author" content="Ted Laderas and Jessica Minnier" />
+
+
+<meta name="date" content="2019-06-23" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="introduction.html">
+<link rel="next" href="app-2-reactives.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Preface</a><ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#workshop-expectations"><i class="fa fa-check"></i><b>1.1</b> Workshop Expectations</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#learning-objectives"><i class="fa fa-check"></i><b>1.2</b> Learning Objectives</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>2</b> Introduction</a><ul>
+<li class="chapter" data-level="2.1" data-path="introduction.html"><a href="introduction.html#setup-on-rstudio-cloud"><i class="fa fa-check"></i><b>2.1</b> Setup (On RStudio Cloud)</a></li>
+<li class="chapter" data-level="2.2" data-path="introduction.html"><a href="introduction.html#setup-on-your-computer"><i class="fa fa-check"></i><b>2.2</b> Setup (On your Computer)</a></li>
+<li class="chapter" data-level="2.3" data-path="introduction.html"><a href="introduction.html#introducing-shiny"><i class="fa fa-check"></i><b>2.3</b> Introducing Shiny</a></li>
+<li class="chapter" data-level="2.4" data-path="introduction.html"><a href="introduction.html#functions-in-r"><i class="fa fa-check"></i><b>2.4</b> Functions in R</a><ul>
+<li class="chapter" data-level="2.4.1" data-path="introduction.html"><a href="introduction.html#writing-our-own-functions"><i class="fa fa-check"></i><b>2.4.1</b> Writing our own functions</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="introduction.html"><a href="introduction.html#the-concept-of-ui-and-server-elements"><i class="fa fa-check"></i><b>2.5</b> The concept of <code>ui</code> and <code>server</code> elements</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="app-1-connecting-ui-and-server.html"><a href="app-1-connecting-ui-and-server.html"><i class="fa fa-check"></i><b>3</b> App 1: Connecting <code>ui</code> and <code>server</code></a><ul>
+<li class="chapter" data-level="3.1" data-path="app-1-connecting-ui-and-server.html"><a href="app-1-connecting-ui-and-server.html#making-a-ggplot-interactive"><i class="fa fa-check"></i><b>3.1</b> Making a ggplot interactive</a></li>
+<li class="chapter" data-level="3.2" data-path="app-1-connecting-ui-and-server.html"><a href="app-1-connecting-ui-and-server.html#exercise"><i class="fa fa-check"></i><b>3.2</b> Exercise</a></li>
+<li class="chapter" data-level="3.3" data-path="app-1-connecting-ui-and-server.html"><a href="app-1-connecting-ui-and-server.html#more-about-inputs-and-outputs"><i class="fa fa-check"></i><b>3.3</b> More about Inputs and Outputs</a><ul>
+<li class="chapter" data-level="3.3.1" data-path="app-1-connecting-ui-and-server.html"><a href="app-1-connecting-ui-and-server.html#interactive-control-tools-from-ui-to-server"><i class="fa fa-check"></i><b>3.3.1</b> Interactive control tools (from UI to server)</a></li>
+<li class="chapter" data-level="3.3.2" data-path="app-1-connecting-ui-and-server.html"><a href="app-1-connecting-ui-and-server.html#display-output-from-server-to-ui"><i class="fa fa-check"></i><b>3.3.2</b> Display output (from server to UI)</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="app-1-connecting-ui-and-server.html"><a href="app-1-connecting-ui-and-server.html#what-youve-learned-so-far"><i class="fa fa-check"></i><b>3.4</b> What you’ve learned so far</a></li>
+<li class="chapter" data-level="3.5" data-path="app-1-connecting-ui-and-server.html"><a href="app-1-connecting-ui-and-server.html#for-more-info"><i class="fa fa-check"></i><b>3.5</b> For More Info</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="app-2-reactives.html"><a href="app-2-reactives.html"><i class="fa fa-check"></i><b>4</b> App 2: Reactives</a><ul>
+<li class="chapter" data-level="4.1" data-path="app-2-reactives.html"><a href="app-2-reactives.html#exercise-1"><i class="fa fa-check"></i><b>4.1</b> Exercise</a></li>
+<li class="chapter" data-level="4.2" data-path="app-2-reactives.html"><a href="app-2-reactives.html#for-more-info-1"><i class="fa fa-check"></i><b>4.2</b> For More Info</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="app-3-adding-tooltips-with-plotly.html"><a href="app-3-adding-tooltips-with-plotly.html"><i class="fa fa-check"></i><b>5</b> App 3: Adding tooltips with <code>plotly</code></a><ul>
+<li class="chapter" data-level="5.1" data-path="app-3-adding-tooltips-with-plotly.html"><a href="app-3-adding-tooltips-with-plotly.html#exercise-2"><i class="fa fa-check"></i><b>5.1</b> Exercise</a></li>
+<li class="chapter" data-level="5.2" data-path="app-3-adding-tooltips-with-plotly.html"><a href="app-3-adding-tooltips-with-plotly.html#for-more-info-2"><i class="fa fa-check"></i><b>5.2</b> For More Info</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="app-4-adding-in-a-file-loader-observe-and-update-.html"><a href="app-4-adding-in-a-file-loader-observe-and-update-.html"><i class="fa fa-check"></i><b>6</b> App 4: Adding in a file loader: <code>observe</code> and <code>update</code>.</a><ul>
+<li class="chapter" data-level="6.1" data-path="app-4-adding-in-a-file-loader-observe-and-update-.html"><a href="app-4-adding-in-a-file-loader-observe-and-update-.html#exercise-3"><i class="fa fa-check"></i><b>6.1</b> Exercise</a></li>
+<li class="chapter" data-level="6.2" data-path="app-4-adding-in-a-file-loader-observe-and-update-.html"><a href="app-4-adding-in-a-file-loader-observe-and-update-.html#more-examples"><i class="fa fa-check"></i><b>6.2</b> More examples</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="the-finished-app.html"><a href="the-finished-app.html"><i class="fa fa-check"></i><b>7</b> The Finished App</a><ul>
+<li class="chapter" data-level="7.1" data-path="the-finished-app.html"><a href="the-finished-app.html#extensions"><i class="fa fa-check"></i><b>7.1</b> Extensions</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="testing-and-debugging-apps.html"><a href="testing-and-debugging-apps.html"><i class="fa fa-check"></i><b>8</b> Testing and debugging apps</a><ul>
+<li class="chapter" data-level="8.1" data-path="testing-and-debugging-apps.html"><a href="testing-and-debugging-apps.html#debugging-your-app"><i class="fa fa-check"></i><b>8.1</b> Debugging your app</a></li>
+<li class="chapter" data-level="8.2" data-path="testing-and-debugging-apps.html"><a href="testing-and-debugging-apps.html#issues-youll-encounter-with-interactive-programming"><i class="fa fa-check"></i><b>8.2</b> Issues you’ll encounter with interactive programming</a></li>
+<li class="chapter" data-level="8.3" data-path="testing-and-debugging-apps.html"><a href="testing-and-debugging-apps.html#using-print-statements-to-debug-your-shiny-app"><i class="fa fa-check"></i><b>8.3</b> Using <code>print</code> statements to debug your Shiny app</a></li>
+<li class="chapter" data-level="8.4" data-path="testing-and-debugging-apps.html"><a href="testing-and-debugging-apps.html#using-breakpoints-to-debug"><i class="fa fa-check"></i><b>8.4</b> Using breakpoints to debug</a></li>
+<li class="chapter" data-level="8.5" data-path="testing-and-debugging-apps.html"><a href="testing-and-debugging-apps.html#testing-the-ui-shinytest-and-rselenium"><i class="fa fa-check"></i><b>8.5</b> Testing the UI: <code>shinytest</code> and <code>RSelenium</code></a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="where-next.html"><a href="where-next.html"><i class="fa fa-check"></i><b>9</b> Where Next?</a><ul>
+<li class="chapter" data-level="9.1" data-path="where-next.html"><a href="where-next.html#programming-resources"><i class="fa fa-check"></i><b>9.1</b> Programming Resources</a></li>
+<li class="chapter" data-level="9.2" data-path="where-next.html"><a href="where-next.html#cool-shiny-enhancements"><i class="fa fa-check"></i><b>9.2</b> Cool Shiny Enhancements</a></li>
+<li class="chapter" data-level="9.3" data-path="where-next.html"><a href="where-next.html#deploying-your-app"><i class="fa fa-check"></i><b>9.3</b> Deploying your app</a></li>
+<li class="chapter" data-level="9.4" data-path="where-next.html"><a href="where-next.html#i-want-more"><i class="fa fa-check"></i><b>9.4</b> I want more!</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">A gRadual intRoduction to Shiny</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="app-1-connecting-ui-and-server" class="section level1">
+<h1><span class="header-section-number">3</span> App 1: Connecting <code>ui</code> and <code>server</code></h1>
+<div class="figure">
+<img src="img/shiny-architecture.png" alt="Basic shiny architecture" />
+<p class="caption"><em>Basic shiny architecture</em></p>
+</div>
+<p>We’ll be taking two simple <code>ggplot2</code> graphs and turning them into part of an interactive dashboard. The data we’re going to use is the <code>biopics</code> dataset from the <code>fivethirtyeight</code> package.</p>
+<div id="making-a-ggplot-interactive" class="section level2">
+<h2><span class="header-section-number">3.1</span> Making a ggplot interactive</h2>
+<p>The first visualization is a scatterplot visualizing the total <code>box_office</code> by <code>year_release</code>, colored by <code>type_of_subject</code>. For the interactive portion, we’re going to color each point by different categories. Notice we use <code>aes_string()</code> to map columns to aesthetics. This is important, since we’ll be passing <code>character</code> arguments to modify this plot later.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tidyverse)
+<span class="kw">library</span>(fivethirtyeight)
+<span class="kw">data</span>(biopics)
+
+biopics <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">aes_string</span>(<span class="dt">y=</span><span class="st">&quot;box_office&quot;</span>, <span class="dt">x=</span><span class="st">&quot;year_release&quot;</span>, <span class="dt">color =</span> <span class="st">&quot;type_of_subject&quot;</span>)) <span class="op">+</span>
+<span class="st">        </span><span class="kw">geom_point</span>()</code></pre>
+<p><img src="02-App1_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+</div>
+<div id="exercise" class="section level2">
+<h2><span class="header-section-number">3.2</span> Exercise</h2>
+<ol style="list-style-type: decimal">
+<li><p>Open the <code>01_app_basics</code> folder and open the <code>app.R</code> file. This is the file for the Shiny App and we’ll modify it.</p></li>
+<li><p>Look at the structure of the code. There are two objects that we define: <code>ui</code> and <code>server</code>. We make them into an app with the command <code>shinyApp(ui = ui, server = server)</code>.</p></li>
+<li><p>Take a look at the <code>server</code> code. Notice where our <code>ggplot2</code> code is. Both graphs are placed in a <code>renderPlot()</code> function, and we give them a place in <code>output</code>, so <code>ui</code> can “see” it. The scatterplot is named <code>output$scatter_plot</code> and the boxplot is named <code>output$boxoffice_boxplot</code>.</p></li>
+<li><p>Take a look at the <code>ui</code> code. Where in the code are we displaying <code>scatter_plot</code> and <code>boxoffice_boxplot</code>? Notice we don’t need to refer to <code>output</code>. The display function <code>plotOutput</code> knows to look in the <code>output</code> object.</p></li>
+<li><p>Run the code by clicking the “Run App” button on the top of code window. You can see that we output our graphs in the “main” window.</p></li>
+<li><p>Let’s paste in a control. Paste the following code where it says “Add User Interface Element here” in <code>app.R</code>. If you run the app again, you should see a control, but it doesn’t change the plot.</p></li>
+</ol>
+<pre><code>selectInput(&quot;color_opts&quot;, &quot;Select Category to Color With&quot;,
+        choices = select_color_options)</code></pre>
+<ol start="7" style="list-style-type: decimal">
+<li>Let’s connect the control to the plot. Change the <code>color</code> aesthetic to the following:</li>
+</ol>
+<pre><code>color = input$color_opts</code></pre>
+<ol start="8" style="list-style-type: decimal">
+<li><p>Now try running the app. Your select box should control what categorical data controls the color of the points. Try it out!</p></li>
+<li><p>Bonus! Let’s add in another category option. Where should you add it? Just in case, here are the column names and their data types. You probably shouldn’t add <code>title</code>, <code>director</code>, <code>subject</code>, <code>lead_actor_actress</code> since they aren’t really categories, and they will blow up your <code>ggplot</code>s.</p></li>
+</ol>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">glimpse</span>(biopics)</code></pre>
+<pre><code>## Observations: 761
+## Variables: 14
+## $ title              &lt;chr&gt; &quot;10 Rillington Place&quot;, &quot;12 Years a Slave&quot;, ...
+## $ site               &lt;chr&gt; &quot;tt0066730&quot;, &quot;tt2024544&quot;, &quot;tt1542344&quot;, &quot;tt2...
+## $ country            &lt;chr&gt; &quot;UK&quot;, &quot;US/UK&quot;, &quot;US/UK&quot;, &quot;Canada&quot;, &quot;US&quot;, &quot;US...
+## $ year_release       &lt;int&gt; 1971, 2013, 2010, 2014, 1998, 2008, 2002, 2...
+## $ box_office         &lt;dbl&gt; NA, 5.67e+07, 1.83e+07, NA, 5.37e+05, 8.12e...
+## $ director           &lt;chr&gt; &quot;Richard Fleischer&quot;, &quot;Steve McQueen&quot;, &quot;Dann...
+## $ number_of_subjects &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 3, 3, 3...
+## $ subject            &lt;chr&gt; &quot;John Christie&quot;, &quot;Solomon Northup&quot;, &quot;Aron R...
+## $ type_of_subject    &lt;chr&gt; &quot;Criminal&quot;, &quot;Other&quot;, &quot;Athlete&quot;, &quot;Other&quot;, &quot;O...
+## $ race_known         &lt;chr&gt; &quot;Unknown&quot;, &quot;Known&quot;, &quot;Unknown&quot;, &quot;Known&quot;, &quot;Un...
+## $ subject_race       &lt;chr&gt; NA, &quot;African American&quot;, NA, &quot;White&quot;, NA, &quot;A...
+## $ person_of_color    &lt;lgl&gt; FALSE, TRUE, FALSE, FALSE, FALSE, TRUE, FAL...
+## $ subject_sex        &lt;chr&gt; &quot;Male&quot;, &quot;Male&quot;, &quot;Male&quot;, &quot;Male&quot;, &quot;Male&quot;, &quot;Ma...
+## $ lead_actor_actress &lt;chr&gt; &quot;Richard Attenborough&quot;, &quot;Chiwetel Ejiofor&quot;,...</code></pre>
+</div>
+<div id="more-about-inputs-and-outputs" class="section level2">
+<h2><span class="header-section-number">3.3</span> More about Inputs and Outputs</h2>
+<p>As you start to program Shiny apps, you’ll need to know the different kinds of inputs and the different kinds of outputs. This is a quick tour of the various types.</p>
+<div id="interactive-control-tools-from-ui-to-server" class="section level3">
+<h3><span class="header-section-number">3.3.1</span> Interactive control tools (from UI to server)</h3>
+<p>In the above image, the UI uses a function <code>selectInput()</code> to allow the user to interactively select the color variable. In the server, this selected color is called <code>input$color_var</code>.</p>
+<p>This function <code>selectInput()</code> creates a box with choices for the user to select from. There are amny types of selecting tools, including drop down menus, checkboxes, radio buttons, numeric sliders, text input, etc. They all have their own function and they all require an argument <code>id=</code> which tells the server what the input is named.</p>
+<p>A list of useful control functions can be found below (a more complete list with examples is in <a href="https://shiny.rstudio.com/tutorial/written-tutorial/lesson3/">shiny.rstudio.com lesson 3</a>):</p>
+<table>
+<thead>
+<tr class="header">
+<th>function</th>
+<th>tool or widget description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>actionButton</code></td>
+<td>action button</td>
+</tr>
+<tr class="even">
+<td><code>checkboxInput</code></td>
+<td>checkbox input, multiple options allowed</td>
+</tr>
+<tr class="odd">
+<td><code>fileInput</code></td>
+<td>file upload</td>
+</tr>
+<tr class="even">
+<td><code>numericInput</code></td>
+<td>numeric value input</td>
+</tr>
+<tr class="odd">
+<td><code>radioButtons</code></td>
+<td>radio buttons where only one option is allowed</td>
+</tr>
+<tr class="even">
+<td><code>selectInput</code></td>
+<td>a box that a user can type into and choose from choices</td>
+</tr>
+<tr class="odd">
+<td><code>sliderInput</code></td>
+<td>a slider bar</td>
+</tr>
+<tr class="even">
+<td><code>textInput</code></td>
+<td>text/string input</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="display-output-from-server-to-ui" class="section level3">
+<h3><span class="header-section-number">3.3.2</span> Display output (from server to UI)</h3>
+<p>In our above example, the server uses a function <code>renderPlot()</code> to send a boxplot image to the UI to display using the function <code>plotOutput()</code>.</p>
+<p>An example in the server function might be:</p>
+<pre class="sourceCode r"><code class="sourceCode r">server &lt;-<span class="st"> </span><span class="cf">function</span>(input, output) {
+
+  output<span class="op">$</span>box_plot &lt;-<span class="st"> </span><span class="kw">renderPlot</span>({
+    <span class="co"># R code goes here</span>
+    <span class="kw">ggplot</span>(iris, <span class="kw">aes</span>(<span class="dt">y=</span>Sepal.Length)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_boxplot</span>()
+  })
+
+}</code></pre>
+<p>Now, we’ve used <code>ggplot()</code> to make our boxplot, and <code>renderPlot()</code> assigns this plot to <code>output$box_plot</code>. The UI uses</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plotOutput</span>(<span class="dt">outputId =</span> <span class="st">&quot;box_plot&quot;</span>)</code></pre>
+<p>which adds the plot stored in <code>output$box_plot</code> to the app.</p>
+<p>There are many <code>render*</code> functions that are reactive functions producing reactive output. Remember, the server is where all the hard work goes. The UI just listens to what the server is giving it.</p>
+<p>A list of render and output functions are found in <a href="https://shiny.rstudio.com/tutorial/written-tutorial/lesson4/">shiny.rstudio.com lesson 4</a>):</p>
+<table>
+<thead>
+<tr class="header">
+<th>render function</th>
+<th>creates</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>renderDataTable</code></td>
+<td>DataTable</td>
+</tr>
+<tr class="even">
+<td><code>renderImage</code></td>
+<td>images (saved as a link to a source file)</td>
+</tr>
+<tr class="odd">
+<td><code>renderPlot</code></td>
+<td>plots</td>
+</tr>
+<tr class="even">
+<td><code>renderPrint</code></td>
+<td>any printed output</td>
+</tr>
+<tr class="odd">
+<td><code>renderTable</code></td>
+<td>data frame, matrix, other table like structures</td>
+</tr>
+<tr class="even">
+<td><code>renderText</code></td>
+<td>character strings</td>
+</tr>
+<tr class="odd">
+<td><code>renderUI</code></td>
+<td>a Shiny tag object or HTML</td>
+</tr>
+</tbody>
+</table>
+<p>Once the result is rendered, the UI takes this output and uses an <code>*Output</code> function to produce it in the app:</p>
+<table>
+<thead>
+<tr class="header">
+<th>output function</th>
+<th>shows/creates</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>dataTableOutput</code></td>
+<td>DataTable</td>
+</tr>
+<tr class="even">
+<td><code>htmlOutput</code></td>
+<td>raw HTML</td>
+</tr>
+<tr class="odd">
+<td><code>imageOutput</code></td>
+<td>image</td>
+</tr>
+<tr class="even">
+<td><code>plotOutput</code></td>
+<td>plot</td>
+</tr>
+<tr class="odd">
+<td><code>tableOutput</code></td>
+<td>table</td>
+</tr>
+<tr class="even">
+<td><code>textOutput</code></td>
+<td>text</td>
+</tr>
+<tr class="odd">
+<td><code>uiOutput</code></td>
+<td>raw HTML</td>
+</tr>
+<tr class="even">
+<td><code>verbatimTextOutput</code></td>
+<td>text</td>
+</tr>
+</tbody>
+</table>
+<p>Render functions take one argument (code) wrapped in <code>({})</code> such as</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">renderText</span>({<span class="st">&quot;Hello World&quot;</span>})</code></pre>
+<p>Output functions take the name of the output object that is the result of a <code>render*</code> function.</p>
+</div>
+</div>
+<div id="what-youve-learned-so-far" class="section level2">
+<h2><span class="header-section-number">3.4</span> What you’ve learned so far</h2>
+<ul>
+<li>The architecture of shiny apps</li>
+<li>How <code>ui</code> and <code>server</code> communicate through <code>output</code> and <code>input</code></li>
+<li>How <code>ui</code> displays plots (using <code>plotOutput</code>)</li>
+<li>Adding a control (a <code>selectInput</code>)</li>
+<li>Connecting that control to our <code>plots</code> using <code>input</code></li>
+</ul>
+</div>
+<div id="for-more-info" class="section level2">
+<h2><span class="header-section-number">3.5</span> For More Info</h2>
+<p>Dean Attali is, next to Joe Cheng, a real Shiny expert and a great teacher. He has a great course on DataCamp called “<a href="https://www.datacamp.com/courses/building-web-applications-in-r-with-shiny-case-studies">Shiny Case Studies</a>” that would be a great next step into learning more about Shiny.</p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="introduction.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="app-2-reactives.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

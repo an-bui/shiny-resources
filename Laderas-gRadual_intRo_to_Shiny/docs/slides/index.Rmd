@@ -1,0 +1,909 @@
+---
+title: "a gRadual intRoduction to Shiny"
+author: "Ted Laderas"
+institute: "BioData Club<br><img src='image/bdc.png' width=250>"
+date: "`r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: xaringan-themer.css
+    nature:
+      ratio: '16:9'
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r xaringan-themer, include = FALSE}
+library(xaringanthemer)
+style_mono_accent(
+  base_color = "midnightblue",
+  header_font_google = google_font("Josefin Sans"),
+  link_color = "steelblue",
+  text_font_size = "24px",
+  footnote_font_size = "20px"
+)
+```
+
+```{r xaringanExtra, echo=FALSE}
+xaringanExtra::use_xaringan_extra(c("tile_view", "logo", "tachyons"))
+xaringanExtra::use_panelset()
+xaringanExtra::use_tachyons()
+```
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+library(flair)
+library(shiny)
+categoricalVars <- c("country", "type_of_subject", "subject_race", "subject_sex")
+library(fivethirtyeight)
+library(ggplot2)
+library(plotly)
+data(biopics)
+```
+
+```{css, echo=FALSE}
+.tiny .remark-code { /*Change made here*/
+  font-size: 80% !important;
+}
+
+```
+---
+
+class: center, middle
+# Welcome and Logistics
+
+---
+class: center, middle
+# Where are these slides?
+
+## http://bit.ly/bdc_shiny_slides
+
+---
+# What is BioData Club?
+
+BioData Club is an interdisciplinary community at OHSU dedicated to promoting a fun and supportive culture of co-learning in data science skills and open science principles. 
+
+We host workshops and social events where attendees can learn and work on projects among friends and colleagues. Biodata Club welcomes everyone who wants to better their know-how in all things data, regardless of skill level. 
+
+We want to replace statistics anxiety and code fear with inspiration and motivation to learn and share. BioData Club is supported by the [OHSU Library](https://www.ohsu.edu/library) and [DMICE](https://www.ohsu.edu/school-of-medicine/medical-informatics-and-clinical-epidemiology).
+
+- [Slack Invitation](https://join.slack.com/t/biodata-club/shared_invite/zt-l15bsq41-OwDFU~1Fwvv0~mu3g4gs7A) - If expired, email bdc-organizers@ohsu.edu
+- [Email bdc-organizers@ohsu.edu](email:bdc-organizers@ohsu.edu) to be added to mailing list for announcements
+---
+# BioData Club Code of Conduct
+
+This workshop is governed by the [BioData Club Code of Conduct](https://biodata-club.github.io/code_of_conduct/).
+
+This workshop is meant to be a psychologically safe space where it's ok to ask questions.
+
+I want to normalize your own curiosity and fuel your desire to learn more.
+
+If you are disruptive to class learning or disparaging to other students, I may mute you for the day.
+
+.footnote[https://bit.ly/bdc_shiny_slides]
+---
+# Code of Conduct Violation Reporting
+
+If you need to report a Code of Conduct Violation, please do so here: 
+
+https://ohsu.ca1.qualtrics.com/jfe/form/SV_8joYAQSpzU6kwuN
+
+All reporting is anonymous. We will review and take appropriate action.
+---
+# Ted Laderas, PhD
+
+.pull-left[
+- Assistant Professor, Department of Medical Informatics and Clinical Epidemiology 
+- Interactive Visualization/Flow Cytometry
+- Certified RStudio/Carpentries Instructor
+- Co-founder of
+  - [BioData Club](http://biodata-club.github.io)
+  - [Cascadia-R Conference](https://cascadiarconf.com)
+- https://laderast.github.io 
+]
+.pull-right[
+<img src="image/ted.jpg" width = 250>
+]
+
+---
+# Workshop TAs
+
+.pull-left[
+- Eric Earl
+- Eric Leung
+- Pierrette Lo
+- Dar'ya Pozhidayeva
+- Marijane White (Traffic Controller)
+]
+
+.pull-right[
+.bg-washed-green.b--dark-green.ba.bw2.br3.shadow-5.ph4.mt5[
+If you need assistance, please message Marijane and she will add you to a breakout room and assign a TA to help you.]
+]
+
+
+---
+# What is Shiny?
+
+.pull-left[
+- A web based framework for interactive visuals
+- Developed by Joe Cheng and RStudio
+- Server based: requires an installation of R to work
+]
+
+.pull-right[
+```{r echo=FALSE}
+knitr::include_graphics("image/shiny.png")
+```
+
+]
+
+.footnote[https://bit.ly/bdc_shiny_slides]
+---
+# Why Shiny?
+
+- Interactive figures that help users explore data
+- Dashboards for showing people summaries of data
+- Widely Used
+- Leverages R and its visualization tools
+
+.footnote[https://bit.ly/bdc_shiny_slides]
+---
+class: center, middle
+
+# Getting to know basic shiny app architecture
+
+---
+
+<img src="image/architecture_peng.jpg" width=850>
+
+Illustration: Vivian Peng
+
+.footnote[https://bit.ly/bdc_shiny_slides]
+---
+# 1.1 Minimal Shiny App
+
+
+.pull-left.tiny[
+##ui
+```{r ui_min, eval=FALSE, include=FALSE}
+ui <- fluidPage()
+```
+
+```{r echo=FALSE}
+decorate("ui_min") %>%
+  flair("()", background="#cdecff") 
+```
+
+- note that `fluidPage` is a `function`
+- uses .bg-lightest-blue[`()`], so arguments need to be comma separated
+  
+]
+
+.pull-right.tiny[
+##server
+```{r server_min, eval=FALSE, include=FALSE}
+server <- function(input, output) {}
+```
+
+```{r echo=FALSE}
+decorate("server_min") %>%
+  flair("{}", background="#ffb700")
+```
+
+- Note that `server` defines a new function
+- Uses .bg-gold[{}] (curly brackets), so code is separated by line
+
+]
+
+```{r eval=FALSE}
+shinyApp(ui = ui, server = server)
+```
+
+.footnote[https://bit.ly/bdc_shiny_slides]
+---
+# `input` and `output` are how `ui` and `server` communicate
+
+- `ui` and `server` are continuously running and listening to each other
+- `ui`: listens to `output` and puts info into `input` 
+    - passes on information on state of controls into `input` (`input$my_slider`)
+    - listens to `output` for generated plots and tables and changes
+- `server`: listens to `input` and puts info into `output`
+    - passes on plots and tables into `output` (`output$my_plot`)
+    - listens to `input` for changes in controls
+
+.footnote[https://bit.ly/bdc_shiny_slides]
+---
+# `biopics` dataset
+
+```{r echo=FALSE}
+gt::gt(biopics[1:5,])
+
+```
+
+---
+class: center, middle
+
+# 1.2 Adding a Plot to our App
+
+---
+## Let's Add This Plot
+
+.pull-left[
+.tiny[
+```{r aes1, eval=FALSE, include=FALSE}
+my_plot <-  ggplot(biopics) + 
+      aes_string(
+        x="year_release", 
+        y="box_office", 
+        color= "type_of_subject") +
+      geom_point()
+```
+
+```{r echo=FALSE}
+decorate("aes1") %>%
+   flair("aes_string", background="#ffb700")
+```
+
+- We use .bg-gold[`aes_string()`] instead of `aes()` because we can specify variables as `character` - such as `"year_release"`
+- Will be helpful later when we add a control
+]
+]
+
+.pull-right[
+.tiny[
+```{r echo=FALSE, warning=FALSE}
+    ggplot(biopics) + 
+      aes_string(x="year_release", 
+                 y="box_office", 
+                 color= "type_of_subject") +
+      geom_point()
+```
+]
+]
+
+---
+# Adding a plot: plotOutput and renderPlot
+
+```{r uibasic2, include=FALSE, eval=FALSE}
+ui <- fluidPage(
+  plotOutput("movie_plot")
+)
+```
+
+
+```{r serverbasic2, include=FALSE, eval=FALSE}
+server <- function(input, output) {
+
+ output$movie_plot <- renderPlot({
+
+   
+   
+   
+})
+
+}
+
+```
+
+.pull-left.tiny[
+```{r, echo=FALSE}
+decorate("uibasic2") %>% 
+  flair("movie_plot", background="#cdecff") %>%
+  flair("plotOutput", background = "#ffb700")
+
+```
+
+- for `ui`, need to add a .bg-gold[`plotOutput()`] to display the plot
+- note the argument .bg-lightest-blue[`"movie_plot"`]
+]
+
+.pull-right.tiny[
+```{r, echo=FALSE}
+decorate("serverbasic2") %>% 
+  flair("movie_plot", background="#cdecff") %>%
+  flair("renderPlot({", background="#ffb700") %>%
+  flair("})", background="#ffb700")
+
+```
+- for `server`, need to add a .bg-gold[`renderPlot()`] to generate the plot
+- assign into .bg-lightest-blue[`output$movie_plot`] so `ui` can display it
+
+]
+
+
+---
+# Adding our ggplot code
+
+```{r uibasic, include=FALSE, eval=FALSE}
+ui <- fluidPage(
+  plotOutput("movie_plot")
+)
+```
+
+
+```{r serverbasic, include=FALSE, eval=FALSE}
+server <- function(input, output) {
+
+ output$movie_plot <- renderPlot({
+
+  ggplot(biopics) + 
+    aes_string(x="year_release", 
+               y="box_office", 
+               color= "type_of_subject") +
+    geom_point()
+
+})
+
+}
+
+```
+
+.pull-left.tiny[
+```{r, echo=FALSE}
+decorate("uibasic") %>% 
+  flair("movie_plot", background="#cdecff")
+
+```
+
+]
+
+.pull-right.tiny[
+```{r, echo=FALSE}
+decorate("serverbasic") %>% 
+  flair("movie_plot", background="#cdecff") %>%
+  flair_lines(5:9)
+
+```
+
+- Now we add our .bg-light-yellow[`ggplot()`] statement in
+]
+
+---
+class: center, middle
+
+# 1.3 Let's Add a Control
+
+---
+# selectInput
+
+.pull-left.tiny[
+```{r selbox, eval=FALSE}
+selectInput(
+  inputId = "color_select", 
+  label = "Select Categorical Variable", 
+  choices = categoricalVars
+  )
+```
+]
+
+.pull-right.tiny[
+`r knitr::include_graphics("image/selectInput.jpg")`
+]
+
+- Want to control the variable we **color** with the `selectInput()` control!
+
+---
+# Adding the selectInput
+
+```{r ui2, include=FALSE, eval=FALSE}
+ui <- fluidPage(
+  plotOutput("movie_plot"),
+  selectInput(
+    inputId = "color_select", 
+    label = "Select Categorical Variable", 
+    choices = categoricalVars)
+)
+```
+
+
+```{r server2, include=FALSE, eval=FALSE}
+server <- function(input, output) {
+
+  output$movie_plot <- renderPlot({
+
+    ggplot(biopics) +
+    aes_string(x="year_release", 
+               y="box_office", 
+               color="type_of_subject") +
+
+      geom_point()
+  })
+
+}
+```
+
+.pull-left.tiny[
+```{r, echo=FALSE}
+decorate("ui2") %>% 
+  flair_lines(3:6)
+
+```
+
+- Here we add the .bg-light-yellow[`selectInput()`] control
+- Note the comma after `plotOutput("movie_plot")`
+]
+
+.pull-right.tiny[
+```{r, echo=FALSE}
+decorate("server2") %>%
+  flair('color="type_of_subject"')
+```
+]
+
+---
+# Wiring in the Input
+
+```{r server3, include=FALSE, eval=FALSE}
+server <- function(input, output) {
+
+  output$movie_plot <- renderPlot({
+
+    ggplot(biopics) +
+    aes_string(x="year_release", 
+               y="box_office", 
+               color=input$color_select) +
+
+      geom_point()
+  })
+
+}
+```
+
+.pull-left.tiny[
+```{r, echo=FALSE}
+decorate("ui2") %>% 
+  flair("color_select", background = "#cdecff") %>%
+  flair("selectInput", background = "#fbf1a9")
+
+```
+]
+
+.pull-right.tiny[
+```{r, echo=FALSE}
+decorate("server3") %>% 
+  flair("color_select", background = "#cdecff")
+
+```
+
+- now we connect our .bg-light-yellow[`selectInput`] to our `ggplot`
+- use .bg-lightest-blue[`input$color_select`] as argument to `color` in `aes_string()`
+]
+
+
+---
+# The Flow: from `selectInput()` to `plotOutput()`
+
+<img src="image/shiny-architecture.png" width = 800>
+
+
+---
+class: center, middle
+
+# Let's open `01_app_basics.Rmd`
+
+---
+class: center, middle
+
+# 02: Making Data Reactive
+
+<img src="image/reactive.png", width = 600>
+
+---
+# Making a Dataset Filterable
+
+```{r filter, include=FALSE, eval=FALSE}
+biopics[1:5, 1:5] %>%
+  filter(year_release > 1917)
+```
+
+```{r echo=FALSE}
+decorate("filter") %>%
+  flair("filter", background = "#ffb700")
+```
+
+- We want to make this .bg-gold[`filter()`] statement dynamic
+- Move a slider, and change the year
+- We'll need to put it in a `reactive` expression
+
+---
+# Making your data listen
+
+```{r reactive1, eval=FALSE, include=FALSE}
+biopics_filtered <- reactive({
+    
+      biopics %>%
+        filter(year_release > input$year_filter)
+    
+  })
+```
+
+```{r echo=FALSE}
+decorate("reactive1") %>%
+  flair("reactive({", background="#ffb700") %>%
+  flair("})", background="#ffb700") %>%
+  flair("input$year_filter", background="#cdecff")
+```
+
+- **reactive** expressions listen to changes in .bg-lightest-blue[`input`]
+- started with a .bg-gold[`reactive({})`]
+- The curly brackets in .bg-gold[`reactive({})`] let us use more than one line of code `{}`
+---
+# Reactive Flow: from slider to data to plot
+
+<img src="image/reactive.png" width = 800>
+
+---
+# Adding our control: sliderInput()
+
+.pull-left.tiny[
+```{r eval=FALSE}
+sliderInput(inputId = "year_filter", 
+            "Select Lowest Year", 
+            min = 1915,
+            max=2014, 
+            value = 1915)
+
+```
+]
+
+.pull-right.tiny[
+
+
+]
+
+---
+# Adding sliderInput (in `ui`)
+
+```{r slider_ui, eval=FALSE, include=FALSE}
+ui <- fluidPage(
+   
+      plotOutput("movie_plot"),
+      sliderInput("year_filter", 
+                  "Select Lowest Year", 
+                  min = 1915,
+                  max=2014, 
+                  value = 1915)
+)
+```
+
+```{r echo=FALSE}
+decorate("slider_ui") %>%
+  flair_lines(4:8)
+```
+
+- Don't forget the comma after `plotOutput("movie_plot")`!
+
+---
+# Using our Reactive (in `server`)
+
+```{r reactive2, include=FALSE, eval=FALSE}
+biopics_filtered <- reactive({
+    biopics %>%
+        filter(year_release > 
+                 input$year_filter)
+     })
+
+```
+
+```{r reactive3, include=FALSE, eval=FALSE}
+renderPlot({
+  
+  ggplot(biopics_filtered()) + 
+  
+  aes_string(y="box_office", 
+             x="year_release") + 
+      
+  geom_point()
+     
+})
+
+```
+
+.pull-left.tiny[
+```{r, echo=FALSE}
+decorate("reactive2") %>%
+  flair("biopics_filtered", background="#ffb700")
+
+```
+]
+
+.pull-right.tiny[
+```{r, echo=FALSE}
+decorate("reactive3") %>%
+  flair("biopics_filtered()", background="#ffb700")
+
+```
+]
+
+---
+# Some Tips
+
+- Always call reactives with the `()` 
+- Example: `biopics_filtered()`
+
+
+---
+class: center, middle
+
+# Let's open 02_reactives.Rmd in RStudio.cloud
+
+---
+class: center, middle
+
+# 03: Adding Tooltips with `{plotly}`
+
+---
+# What is {plotly}?
+
+- A JavaScript library that makes your interactive plots more interactive.
+- accessed with the `{plotly}` package in R
+
+---
+# Making a ggplot into a plotly plot
+
+```{r plotly2, eval=FALSE, include=FALSE}
+my_plot <- ggplot(biopics) +
+  aes_string(x = "box_office", 
+             y="year_release",
+             color="subject") +
+  geom_point()
+
+#ggplotly(my_plot)
+```
+
+.pull-left.tiny[
+```{r echo=FALSE}
+decorate("plotly2") %>%
+  flair("my_plot", background = "#cdecff") %>%
+  flair("ggplotly(", background = "#ffb700")
+```
+
+- assign our plot to .bg-lightest-blue[`my_plot`]
+- run .bg-gold[`ggplotly()`] on .bg-lightest-blue[`my_plot`]
+]
+
+.pull-right.tiny[
+```{r echo=FALSE, warning=FALSE}
+my_plot <- ggplot(biopics) +
+  aes_string(x = "box_office", 
+             y="year_release",
+             color="type_of_subject") +
+  geom_point() +
+  theme(legend.position="none")
+
+ggplotly(my_plot)
+```
+]
+---
+# Adding more tooltip information
+
+```{r plotly1, eval=FALSE, include=FALSE}
+my_plot <- ggplot(biopics) +
+  aes_string(x = "box_office", 
+             y="year_release",
+             title="title",
+             color="type_of_subject",
+             director="director",
+             box_office="box_office", 
+             subject="subject") +
+  geom_point()
+
+#ggplotly(my_plot)
+```
+
+
+.pull-left.tiny[
+```{r echo=FALSE}
+decorate("plotly1") %>%
+  flair_lines(4:8)
+```
+
+- add to `aes_string()`
+]
+
+.pull-right.tiny[
+```{r echo=FALSE, warning=FALSE}
+my_plot <- ggplot(biopics) +
+  aes_string(x = "box_office", 
+             y="year_release",
+             color="type_of_subject",
+             title="title",
+             director="director",
+             box_office="box_office", 
+             subject="subject") +
+  geom_point() +
+  theme(legend.position="none")
+
+ggplotly(my_plot)
+```
+]
+
+
+---
+# Adding to our app - make these changes
+
+.pull-left.tiny[## in `ui`:
+
+Change
+
+```
+plotOutput()
+```
+to
+
+```
+plotlyOutput()
+```
+]
+
+.pull-right.tiny[## in `server`:
+Change
+
+```
+renderPlot()
+```
+
+to
+
+```
+renderPlotly()
+```
+
+]
+
+---
+# Modified App for `plotly` tooltips
+
+```{r ui_plotly, include=FALSE, eval=FALSE}
+ui <- fluidPage(
+  plotlyOutput("movie_plot"),
+  selectInput(inputId = "color_select", 
+              label = "Select Categorical Variable", 
+              choices = categoricalVars)
+)
+```
+
+```{r, server_plotly, include=FALSE, eval=FALSE}
+server <- function(input, output) {
+  
+  output$movie_plot <- renderPlotly({
+    
+    my_plot <- ggplot(biopics) +
+      aes_string(x = "box_office", 
+                 y="year_release",
+                 color="type_of_subject") +
+      geom_point() +
+      theme(legend.position="none")
+    
+    ggplotly(my_plot)
+  })
+}
+```
+
+.pull-left.tiny[
+```{r echo=FALSE}
+decorate("ui_plotly") %>%
+  flair("plotlyOutput", background="#cdecff")
+```
+]
+
+.pull-right.tiny[
+```{r echo=FALSE}
+decorate("server_plotly") %>%
+  flair("renderPlotly", background="#cdecff") %>%
+  flair_lines(5:12)
+```
+]
+
+---
+class: center, middle
+
+# Let's open `03_plotly.Rmd`
+
+---
+# `app.R`
+
+We've been running Shiny apps as code blocks so far.
+
+Apps are usually set up in a folder with `app.R`
+
+---
+class: center, middle
+
+# Open up `04_full_app/app.R`
+
+---
+# Making a new app as a project
+
+In a project, use 
+
+**File > New Project > New Directory > Shiny Web Application**
+
+And then name your app.
+
+---
+class: center, middle
+# Wrap up and Tips
+
+---
+# More about inputs and outputs
+
+Further reading on the different control inputs, and data output types here:
+
+https://laderast.github.io/gradual_shiny/app-1-connecting-ui-and-server.html#more-about-inputs-and-outputs
+
+Shiny Widget Gallery: https://shiny.rstudio.com/gallery/widget-gallery.html
+
+---
+# Layouts
+
+Ways to lay out elements of your application:
+
+- `fluidPage` - https://shiny.rstudio.com/articles/layout-guide.html
+- `flexdashboard` - https://rmarkdown.rstudio.com/flexdashboard/
+
+---
+# Extensions
+
+More info here: https://laderast.github.io/gradual_shiny/where-next.html
+
+---
+# Shiny at OHSU
+
+- OCTRI has an RStudio Connect server that is accessible within the OHSU firewall
+- Requires a developer's fee and user fee
+
+---
+# Shiny in the Real World
+
+- shinyapps.io lets you host Shiny apps externally
+- sign up for an account
+- Be very careful about PHI
+
+---
+# Deploying Apps on shinyapps.io
+
+- Requires installing `{rsconnect}` package
+- When you first try to deploy, it will ask you for your account info
+- When you run the app, there is a "Publish" button
+
+---
+# Shiny Gallery
+
+You should now know enough to start learning from the examples:
+
+- https://shiny.rstudio.com/gallery/
+- Look at demos
+
+---
+# Going Further
+
+- Try to precompute as many statistics as possible in advance
+- Learn more about how to dynamically update the `ui`
+- Look at `htmlwidgets` for possible JavaScript visualizations you can leverage
+
+---
+# Suggested Reading
+
+- [Mastering Shiny](https://mastering-shiny.org/) by Hadley Wickham
+- [Interactive web-based data visualization with R, plotly, and shiny](https://plotly-r.com/) by Carson Sievert
+
+---
+# Acknowledgements
+
+- Biodata Club
+- Jessica Minnier
+- Pierrette Lo
+- Dar'ya Pozhidayeva
+- Vivian Peng
+- Eric Leung
+- Eric Earl
+
+NLM T15: 
+
+---
+class: center, middle
+
+# Questions?
